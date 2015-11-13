@@ -1,5 +1,7 @@
 package;
-import flash.system.System; // Or nme.system.System if you're using NME
+
+// Or nme.system.System if you're using NME
+import flash.system.System;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -26,25 +28,22 @@ class PlayState extends FlxState {
   private var _topMenu:FlxText;
 
   private var walls:WallGroup;
-  private var _bricks:FlxGroup;
+  private var _bricks:Bricks;
 
   private var _lifes:Int = 3;
+  private var _level:Int = 0;
 
   override public function create():Void {
     FlxG.mouse.visible = false;
 
     // Add bat
-    _bat = new FlxSprite(180, 220);
-    _bat.makeGraphic(40, 6, FlxColor.HOT_PINK);
-    _bat.immovable = true;
+    _bat = new Bat(180, 220);
     add(_bat);
-
-    bricks(5, 6);
-    add(_bricks);
 
     walls = new WallGroup();
     add(walls);
 
+    startNewLevel(_level);
     _topMenu = new FlxText(0, -2, 100, "Brek-Kraut! " + _lifes);
     _scoreText = new FlxText(270, -2, 100, "score: " + _score);
 
@@ -64,37 +63,12 @@ class PlayState extends FlxState {
     ball.startPosition();
   }
 
-  private function bricks(columns: Int, rows: Int) {
-    if(rows > 10) {
-      throw "Rows cannot be greater than 10";
-    }
-
+  private function startNewLevel(level:Int = 0):Void {
     if(_bricks != null) {
-      _bricks.kill();
+      _bricks.destroy();
     }
-
-    _bricks = new FlxGroup();
-
-    var brickColours:Array<Int> = [0xffd03ad1, 0xfff75352, 0xfffd8014, 0xffff9024, 0xff05b320, 0xff6d65f6];
-
-    var bx:Int = 10;
-    var by:Int = 30;
-
-    var size_x:Int = cast(300 / columns);
-    var size_y:Int = 15;
-
-    for (y in 0...rows) {
-      for (x in 0...columns) {
-	var tempBrick:FlxSprite = new FlxSprite(bx, by);
-	tempBrick.makeGraphic(size_x, size_y, brickColours[y%brickColours.length]);
-	tempBrick.immovable = true;
-	_bricks.add(tempBrick);
-	bx += size_x;
-      }
-
-      bx = 10;
-      by += size_y;
-    }
+    _bricks = new Bricks(5, 6 + level);
+    add(_bricks);
   }
 
   override public function destroy():Void {
@@ -130,20 +104,12 @@ class PlayState extends FlxState {
 
     if (_lifes == 0) {
       gotoLostState();
-    } else if (hasWon()) {
-      bricks(5, 6);
-      add(_bricks);
+    } else if (_bricks.allDestroyed()) {
+      _level++;
+      startNewLevel(_level);
     }
   }
 
-  private function hasWon() : Bool {
-    var accum = true;
-    var allBricks = _bricks.members;
-    for(brick in _bricks.members) {
-      accum = accum && !brick.exists;
-    }
-    return accum;
-  }
 
   private function gotoLostState() {
     FlxG.camera.fade(FlxColor.BLACK,.33, false, function() {

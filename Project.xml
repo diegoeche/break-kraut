@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
+  <android target-sdk-version="19" />
+  <window hardware="true" allow-shaders="true" require-shaders="true" if="cpp"/>
+  <window vsync="true" antialiasing="4" if="cpp" />
+  <window orientation="portrait" /> || <window orientation="landscape" if="cpp"/>
 	<!------------------------------APPLICATION SETTINGS---------------------------->
 
 	<app title="HelloWorld" file="HelloWorld" main="Main" version="0.0.1" company="HaxeFlixel" />
