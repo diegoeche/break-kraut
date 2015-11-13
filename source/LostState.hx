@@ -31,15 +31,27 @@ class LostState extends FlxState {
     super.destroy();
   }
 
+  private function restartGame() {
+    FlxG.camera.fade(FlxColor.BLACK,.33, false, function() {
+      FlxG.switchState(new PlayState());
+    });
+  }
+
   override public function update():Void {
     super.update();
 
     if (FlxG.keys.anyPressed(["Q"])) {
       System.exit(0);
     } else if (FlxG.keys.anyPressed(["R"])) {
-      FlxG.camera.fade(FlxColor.BLACK,.33, false, function() {
-        FlxG.switchState(new PlayState());
-      });
+      restartGame();
     }
+
+    #if !FLX_NO_TOUCH
+    for (touch in FlxG.touches.list) {
+      if (touch.pressed) {
+        restartGame();
+      }
+    }
+    #end
   }
 }

@@ -5,6 +5,7 @@ import flash.system.System;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.system.FlxSound;
 import flixel.FlxObject;
 import flixel.tweens.FlxTween;
 
@@ -32,8 +33,10 @@ class PlayState extends FlxState {
 
   private var _lifes:Int = 3;
   private var _level:Int = 0;
-
+  private var laserSound:FlxSound;
   override public function create():Void {
+    laserSound = FlxG.sound.load("assets/sounds/NFF-laser.wav");
+
     FlxG.mouse.visible = false;
 
     // Add bat
@@ -78,6 +81,29 @@ class PlayState extends FlxState {
   override public function update():Void {
     super.update();
     _bat.velocity.x = 0;
+
+    #if !FLX_NO_TOUCH
+    // Simple routine to move bat to x position of touch
+    for (touch in FlxG.touches.list)
+    {
+      if (touch.pressed)
+      {
+	if (touch.x > 10 && touch.x < 270)
+	  _bat.x = touch.x;
+      }
+    }
+    // Vertical long swipe up or down resets game state
+    for (swipe in FlxG.swipes)
+    {
+      if (swipe.distance > 100)
+      {
+	if ((swipe.angle < 10 && swipe.angle > -10) || (swipe.angle > 170 || swipe.angle < -170))
+	{
+	  FlxG.resetState();
+	}
+      }
+    }
+    #end
 
     if (FlxG.keys.anyPressed(["LEFT", "A"]) && _bat.x > 10) {
       onLeft();
@@ -137,7 +163,7 @@ class PlayState extends FlxState {
     Brick.exists = false;
     ball.squeeze();
     _score += 1;
-    FlxG.sound.play("assets/sounds/NFF-laser.wav", 0.2, false);
+    laserSound.play();
   }
 
   private function hitWall(Ball:FlxSprite, Brick:FlxObject):Void {
