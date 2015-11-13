@@ -70,7 +70,7 @@ class PlayState extends FlxState {
     if(_bricks != null) {
       _bricks.destroy();
     }
-    _bricks = new Bricks(5, 6 + level);
+    _bricks = new Bricks(6, 5 + level);
     add(_bricks);
   }
 
