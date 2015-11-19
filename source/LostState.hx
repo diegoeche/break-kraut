@@ -44,6 +44,7 @@ class LostState extends FlxState {
 
     ranking = null;
     doRankingCall();
+    doScoreCall();
   }
 
   override public function destroy():Void {
@@ -65,6 +66,26 @@ class LostState extends FlxState {
       ranking = Json.parse(data);
     }
     rankingCall.request();
+  }
+
+  private function doScoreCall() {
+    if(score != null) {
+      var scoreCall: Http = new haxe.Http(BACKEND + "api/user/1");
+      scoreCall.setHeader("Content-Type", "application/json; charset=utf-8");
+      var data = {
+        new_score: score + ""
+      };
+      scoreCall.setPostData(Json.stringify(data));
+      trace(Json.stringify(data));
+
+      scoreCall.onError = function (error: String) {
+        trace("Error doing the score call: " + error);
+      }
+      scoreCall.onData = function (data: String) {
+        trace("Worked");
+      }
+      scoreCall.request(true);
+    }
   }
 
   override public function update():Void {
