@@ -1,5 +1,6 @@
 package;
 import flash.system.System; // Or nme.system.System if you're using NME
+import flash.external.ExternalInterface;
 
 import flixel.FlxG;
 import flixel.FlxState;
@@ -18,7 +19,7 @@ class LostState extends FlxState {
   // Production:
   private static inline var BACKEND = "http://fast-everglades-7042.herokuapp.com/";
 
-  var score: Int;
+  var score: Int = 0;
   var rankingNameList: FlxText;
   var rankingPointsList: FlxText;
   var ranking: Array<Dynamic>;
@@ -69,12 +70,15 @@ class LostState extends FlxState {
   }
 
   private function doScoreCall() {
-    if(score != null) {
-      var scoreCall: Http = new haxe.Http(BACKEND + "api/user/1");
+    if(score != 0) {
+      var userId = ExternalInterface.call("getUser");
+      var scoreCall: Http = new haxe.Http(BACKEND + "api/user/" + userId);
       scoreCall.setHeader("Content-Type", "application/json; charset=utf-8");
+
       var data = {
         new_score: score + ""
       };
+
       scoreCall.setPostData(Json.stringify(data));
       trace(Json.stringify(data));
 
