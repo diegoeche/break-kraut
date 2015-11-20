@@ -14,4 +14,6 @@ This project uses HaxeFlixel http://haxeflixel.com/
 Will compile and run the project using the Neko virtual machine.
 
 
-The code is hosted (here)[https://fast-everglades-7042.herokuapp.com/]
+The code is hosted [here](https://fast-everglades-7042.herokuapp.com/)
+
+A simple backend in Elixir is available [here](https://github.com/diegoeche/break-kraut.backend)
